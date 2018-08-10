@@ -1,59 +1,111 @@
 <?php
-
-	//initialize config file
-	$configs = include('config/conf.php');
-    $registrationIds = 'dkcfs-AKk_4:APA91bExt06HXkQkjoSvLaIHTX1k9TbZBovd1QgjAObT914Udh83I5FTPcjTQjaXl7jSLs-amAfdMfZq6fYtqSKjB1y0Q4I11jxD9jkDN9AxrggHi0xl5j3m0lJjK3kLiJ_KzwLXpvMqS-yAbH5c4oTxK6vHpmBkVw';
-
-#prep the bundle
-     $message = array
-     (
-		'body' 	=> 'Firebase va propulse Notify News',
-		'title'	=> 'Salut Lyabs243',
-             	/*'icon'	=> 'myicon',Default Icon*/
-              	/*'sound' => 'mySound'Default sound*/
-     );
-
-	$fields = array
-	(
-		'to'		=> $registrationIds,
-		/*'registration_ids' => array('dkcfs-AKk_4:APA91bExt06HXkQkjoSvLaIHTX1k9TbZBovd1QgjAObT914Udh83I5FTPcjTQjaXl7jSLs-amAfdMfZq6fYtqSKjB1y0Q4I11jxD9jkDN9AxrggHi0xl5j3m0lJjK3kLiJ_KzwLXpvMqS-yAbH5c4oTxK6vHpmBkVw','err'),*/
-		'notification'	=> $message
-	);
-	
-	$headers = array
-	(
-		'Authorization: key=' . $configs['API_ACCESS_KEY'],
-		'Content-Type: application/json'
-	);
-
-#Send Reponse To FireBase Server	
-		$ch = curl_init();
-		curl_setopt( $ch,CURLOPT_URL, $configs['FIREBASE_SERVER_URL'] );
-		curl_setopt( $ch,CURLOPT_POST, true );
-		curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
-		curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-		curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
-		$result = curl_exec($ch );
-		curl_close( $ch );
-
-#Echo Result Of FireBase Server
-echo $result;
     class FNotifyPhp
     {
         private $registrationIds;
         private $title;
         private $body;
         private $to;
+        
+        private $fields;
+        private $message;
+        private $headers;
+        
+        private $configs;
 
-        public function __construct()
+        public function __construct($_configs)
         {
+            $this->configs = $_configs;
+            
             $this->registrationIds = array();
             $this->body = 'Specify body Message';
             $this->title = 'Specify message title';
             $this->to = 'Specify recipient token';
+            
+            $this->fields = array();
+            $this->message = array();
+            $this->headers = array();                    
         }
-           
+        
+        /**
+         * Notify only one recipient
+         * must specify "to" propriety
+         */
+        function notifyRecipient()
+        {
+            //init notification key's message
+            $this->initMessageKeys();
+            
+            $this->initFieldKeys(true);
+            $this->initHeaderKeys();
+            return $this->sendMessage();
+        }
+        
+        /**
+         * Notify more than one recipient
+         * must specify "registrationIds" propriety
+         */
+        function notifyRecipients()
+        {
+            //init notification key's message
+            $this->initMessageKeys();
+            
+            $this->initFieldKeys(FALSE);
+            $this->initHeaderKeys();
+            return $this->sendMessage();
+        }
+        
+        //init notification key's message
+        private function initMessageKeys()
+        {
+            $this->message = array
+                            (
+                                'body' 	=> $this->body,
+                                'title'	=> $this->title,
+                            );
+        }
+        
+        //init field keys
+        private function initFieldKeys($oneRecipient=true)
+        {
+            if($oneRecipient)
+            {
+                $this->fields['to'] = $this->to;
+            }
+            else 
+            {
+                $this->fields['registrationIds'] = $this->registrationIds;
+            }
+            $this->fields['notification'] = $this->message;
+        }
+        
+        //init notification key's message
+        private function initHeaderKeys()
+        {
+            $this->headers = array
+                            (
+                                'Authorization: key=' . $this->configs['API_ACCESS_KEY'],
+                                'Content-Type: '.$this->configs['CONTENT_TYPE']
+                            );
+        }
+        
+        /**
+         * send message notification
+         * @return json message of result
+         */
+        private function sendMessage()
+        {
+            $ch = curl_init();
+            curl_setopt( $ch,CURLOPT_URL, $this->configs['FIREBASE_SERVER_URL'] );
+            curl_setopt( $ch,CURLOPT_POST, true );
+            curl_setopt( $ch,CURLOPT_HTTPHEADER, $this->headers );
+            curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $this->fields ) );
+            $result = curl_exec($ch );
+            curl_close( $ch );
+            return $result;
+        }
+                
         function getRegistrationIds() {
             return $this->registrationIds;
         }
@@ -67,7 +119,7 @@ echo $result;
         }
 
         function getTo() {
-               return $this->to;
+            return $this->to;
         }
 
         function setRegistrationIds($registrationIds) {
