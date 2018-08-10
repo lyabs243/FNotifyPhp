@@ -1,7 +1,7 @@
 <?php
-include_once './lib/FNotifyPhp.php';
+include_once '../lib/FNotifyPhp.php';
 //initialize config file
-$configs = include('./lib/config/conf.php');
+$configs = include('../lib/config/conf.php');
 $registrationIds = 'Registration ID';
 $title = 'My title';
 $message = 'The Message';
