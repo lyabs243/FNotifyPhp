@@ -4,7 +4,9 @@
         private $registrationIds;
         private $title;
         private $body;
+        private $priority = null;
         private $to;
+        private $timeToLive = 0;
         
         private $fields;
         private $message;
@@ -62,6 +64,14 @@
                                 'body' 	=> $this->body,
                                 'title'	=> $this->title,
                             );
+            if($this->priority != null)
+            {
+                $this->message['priority'] = $this->priority;
+            }
+            if($this->timeToLive > 0)
+            {
+                $this->message['time_to_live'] = $this->timeToLive;
+            }
         }
         
         //init field keys
@@ -137,4 +147,37 @@
         function setTo($to) {
             $this->to = $to;
         }
+
+        /**
+         * @return mixed
+         */
+        public function getPriority()
+        {
+            return $this->priority;
+        }
+
+        /**
+         * @param mixed $priority
+         */
+        public function setPriority($priority)
+        {
+            $this->priority = $priority;
+        }
+
+        /**
+         * @return int
+         */
+        public function getTimeToLive()
+        {
+            return $this->timeToLive;
+        }
+
+        /**
+         * @param int $timeToLive
+         */
+        public function setTimeToLive($timeToLive)
+        {
+            $this->timeToLive = $timeToLive;
+        }
+
     }
