@@ -11,12 +11,17 @@ This API provides Server side by using HTTP Protocol gives by Firebase (more det
 
 <h1>Example</h1>
 ```php
-  <?php
-    include_once '../lib/FNotifyPhp.php'; //path to FNotifyPhp class
+
+    include_once '../lib/FNotifyPhp.php';
+    //path to FNotifyPhp class
     //initialize config file
+    
     $configs = include('../lib/config/conf.php'); //path to conf file
+    
     $registrationIds = 'Registration ID';
+    
     $title = 'My title';
+    
     $message = 'The Message';
     $fNotifyPhp = new FNotifyPhp($configs);
     $fNotifyPhp->setBody($message);
@@ -24,4 +29,4 @@ This API provides Server side by using HTTP Protocol gives by Firebase (more det
     $fNotifyPhp->setTitle($title);
     $result = $fNotifyPhp->notifyRecipient();
     echo $result;
-  ```
+```
