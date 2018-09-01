@@ -7,6 +7,7 @@
         private $priority = null;
         private $to;
         private $timeToLive = 0;
+        private $data;
         
         private $fields;
         private $message;
@@ -19,6 +20,7 @@
             $this->configs = $_configs;
             
             $this->registrationIds = array();
+            $this->data = array();
             $this->body = 'Specify body Message';
             $this->title = 'Specify message title';
             $this->to = 'Specify recipient token';
@@ -64,6 +66,10 @@
                                 'body' 	=> $this->body,
                                 'title'	=> $this->title,
                             );
+            if(count($this->data) > 0)
+            {
+                $this->message['data'] = $this->data;
+            }
             if($this->priority != null)
             {
                 $this->message['priority'] = $this->priority;
@@ -146,6 +152,22 @@
 
         function setTo($to) {
             $this->to = $to;
+        }
+
+        /**
+         * @return array
+         */
+        public function getData()
+        {
+            return $this->data;
+        }
+
+        /**
+         * @param array $data
+         */
+        public function setData($data)
+        {
+            $this->data = $data;
         }
 
         /**
