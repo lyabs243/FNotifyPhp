@@ -2,8 +2,8 @@
     class FNotifyPhp
     {
         private $registrationIds;
-        private $title;
-        private $body;
+        private $title = null;
+        private $body = null;
         private $priority = null;
         private $to;
         private $timeToLive = 0;
@@ -21,8 +21,6 @@
             
             $this->registrationIds = array();
             $this->data = array();
-            $this->body = 'Specify body Message';
-            $this->title = 'Specify message title';
             $this->to = 'Specify recipient token';
             
             $this->fields = array();
@@ -57,27 +55,15 @@
             $this->initHeaderKeys();
             return $this->sendMessage();
         }
-        
+
         //init notification key's message
         private function initMessageKeys()
         {
             $this->message = array
-                            (
-                                'body' 	=> $this->body,
-                                'title'	=> $this->title,
-                            );
-            if(count($this->data) > 0)
-            {
-                $this->message['data'] = $this->data;
-            }
-            if($this->priority != null)
-            {
-                $this->message['priority'] = $this->priority;
-            }
-            if($this->timeToLive > 0)
-            {
-                $this->message['time_to_live'] = $this->timeToLive;
-            }
+            (
+                'body' 	=> $this->body,
+                'title'	=> $this->title,
+            );
         }
         
         //init field keys
@@ -91,7 +77,23 @@
             {
                 $this->fields['registrationIds'] = $this->registrationIds;
             }
-            $this->fields['notification'] = $this->message;
+            if(count($this->data) > 0)
+            {
+                $this->fields['data'] = $this->data;
+            }
+            if($this->priority != null)
+            {
+                $this->fields['priority'] = $this->priority;
+            }
+            if($this->timeToLive > 0)
+            {
+                $this->fields['time_to_live'] = $this->timeToLive;
+            }
+            //on initialise la notification que si on a specifie le titre et le body
+            if($this->title != null && $this->body != null)
+            {
+                $this->fields['notification'] = $this->message;
+            }
         }
         
         //init notification key's message
